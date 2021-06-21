@@ -1,5 +1,5 @@
 {
-  "name": "wakeword-zero",
+  "name": "@ozymandiasthegreat/wakeword-zero",
   "version": "1.0.0",
   "description": "Personal wake word detector ported to Web/WASM and bundled with Webpack",
   "main": "dist/main.js",
