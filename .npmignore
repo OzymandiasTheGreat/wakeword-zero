@@ -6,7 +6,7 @@ test.js
 try.js
 *.wav
 *.raw
-example
+docs
 vad
 src
 index.js
