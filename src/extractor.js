@@ -1,10 +1,11 @@
-const Stream      = require('stream')
-const Block       = require('block-stream2')
-const debug       = require('debug')('extractor')
-const Gist        = require('@mathquis/node-gist')
-const Utils       = require('./utils')
+import { Transform } from "stream";
+import Block from "block-stream2";
+import * as MFCC from "node-mfcc";
+import * as FFT from "fft-js";
+import Utils from "./utils";
 
-class FeatureExtractor extends Stream.Transform {
+
+export default class FeatureExtractor extends Transform {
   constructor(options) {
     super({
       readableObjectMode: true
@@ -12,22 +13,19 @@ class FeatureExtractor extends Stream.Transform {
     this.options    = options || {}
     this.samples    = []
     this._full      = false
-    this._extractor = new Gist(this.samplesPerFrame, this.sampleRate)
+    this._extractor = MFCC.construct(this.samplesPerFrame / 2, 24, 1, this.sampleRate / 2, this.sampleRate)
     this._block     = new Block( this.samplesPerShift * this.sampleRate / 8000 )
 
     this._block
       .on('drain', () => {
-        debug('Block stream available')
         this._full = false
       })
       .on('data', audioBuffer => {
-          debug('Extracting from frame (length: %d)', audioBuffer.length)
           const newSamples = this.preEmphasis( audioBuffer )
           if ( this.samples.length >= this.samplesPerFrame ) {
             this.samples = [...this.samples.slice(newSamples.length), ...newSamples]
             try {
               const features = this.extractFeatures( this.samples.slice(0, this.samplesPerFrame) )
-              debug('Features: %O', features)
               this.push({features, audioBuffer})
             } catch (err) {
               this.error(err)
@@ -61,7 +59,6 @@ class FeatureExtractor extends Stream.Transform {
 
   _write(audioData, enc, done) {
     if ( !this._block.write(audioData, enc, done) ) {
-      debug('Block stream is full')
       this._full = true
     }
   }
@@ -95,9 +92,8 @@ class FeatureExtractor extends Stream.Transform {
   }
 
   extractFeatures(audioFrame) {
-    this._extractor.processAudioFrame(Float32Array.from(audioFrame))
-    return this._extractor.getMelFrequencyCepstralCoefficients().slice(1)
+    var phasors = FFT.fft(audioFrame)
+    var mags = FFT.util.fftMag(phasors)
+    return this._extractor(mags).slice(1)
   }
 }
-
-module.exports = FeatureExtractor

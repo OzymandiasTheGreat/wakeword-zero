@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Document</title>
+	<script src="../../dist/main.js"></script>
+</head>
+<body>
+	<button id="start" >Start</button>
+
+	<pre id="output" ></pre>
+<script type="module" >
+	const startElem = document.getElementById("start");
+	const outputElem = document.getElementById("output");
+
+	const worklet = `
+	class PTModuleProcessor extends AudioWorkletProcessor{
+		constructor() {
+			super();
+		}
+
+		process(inputs, outputs, params) {
+			this.port.postMessage(inputs[0][0]);
+			return true;
+		}
+	}
+
+	registerProcessor('port-processor', PTModuleProcessor);`;
+
+	const { WakewordDetector } = await WakeWord.DetectorBuilder();
+	const wake = new WakewordDetector({ threshold: 0.5 });
+	// const sink = new mod.AudioBufferSink(wake);
+	const promises = [];
+	for (let i = 1; i <= 3; i++) {
+		promises.push(fetch(`/example/joris-${i}.wav`).then((resp) => resp.arrayBuffer()).then((buff) => buff.slice(44)));
+	}
+	Promise.all(promises).then((buffs) => wake.addKeyword("joris", buffs));
+
+	wake.on("ready", () => console.log("READY"));
+	wake.on("error", (err) => console.log("ERROR", err));
+	wake.on("data", (event) => {
+		const log = {...event};
+		delete log.audioData;
+		outputElem.append(`${JSON.stringify(log, null, 2)}\n`);
+	});
+
+	const handleSuccess = function(stream) {
+		const context = new AudioContext();
+		const source = context.createMediaStreamSource(stream);
+
+		const blob = new Blob([worklet], { type: "text/javascript" });
+		const uri = URL.createObjectURL(blob);
+
+		context.audioWorklet.addModule(uri).then(() => {
+			let node = new AudioWorkletNode(context, 'port-processor');
+			node.port.onmessage = (event) => {
+				const pcm = event.data;
+				wake.write(pcm, null, null, 48000);
+			};
+
+			source.connect(node).connect(context.destination);
+		});
+	};
+
+	startElem.addEventListener("click", () => {
+		navigator.mediaDevices.getUserMedia({ audio: true, video: false }).then(handleSuccess);
+	});
+</script>
+</body>
+</html>

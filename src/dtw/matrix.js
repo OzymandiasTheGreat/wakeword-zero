@@ -15,15 +15,13 @@ const createArray = function (length, value) {
   return array;
 }
 
-const createMatrix = function (m, n, value) {
-  const matrix = []
-  for (let rowIndex = 0; rowIndex < m; rowIndex++) {
-    matrix.push(createArray(n, value))
+export default {
+  create(m, n, value) {
+    const matrix = []
+    for (let rowIndex = 0; rowIndex < m; rowIndex++) {
+      matrix.push(createArray(n, value))
+    }
+
+    return matrix
   }
-
-  return matrix
-}
-
-module.exports = {
-  create: createMatrix
 }

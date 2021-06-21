@@ -22,7 +22,7 @@ function cosineSimilarity(vectorA = [], vectorB = []) {
   return magnitude === 0 ? 0 : dotAB / magnitude;
 }
 
-module.exports = {
+export default {
 	convertInt16ToFloat32,
 	cosineSimilarity
 }

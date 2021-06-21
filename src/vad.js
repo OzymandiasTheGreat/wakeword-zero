@@ -1,46 +1,53 @@
-const VAD = require('node-vad')
+import builder from '@ozymandiasthegreat/vad';
 
-class VoiceActivityFilter {
-  constructor(options) {
-    this.options = options || {}
-    this._debouncing = this.debounce
-    this._vad = new VAD(this.vadMode)
-  }
 
-  get sampleRate() {
-    return this.options.sampleRate || 16000
-  }
+export default async function VoiceActivityFilterBuilder() {
+  const { VAD } = await builder();
 
-  get vadMode() {
-    return this.options.vadMode || VAD.Mode.VERY_AGGRESSIVE
-  }
-
-  get vadDebounceTime() {
-    return this.options.vadDebounceTime || 1000
-  }
-
-  get debounce() {
-    return this.options.debounce || 20
-  }
-
-  async processAudio(audioBuffer) {
-    if ( this._debouncing > 0 ) {
-      this._debouncing--
-      return true
-    }
-    const res = await this._vad.processAudio(audioBuffer, this.sampleRate)
-    if ( res === VAD.Event.VOICE ) {
+  class VoiceActivityFilter {
+    constructor(options) {
+      this.options = options || {}
       this._debouncing = this.debounce
-      return true
+      this._vad = new VAD(this.vadMode)
     }
-    return false
+
+    static get Mode() {
+      return VAD.Mode;
+    }
+
+    get sampleRate() {
+      return this.options.sampleRate || 16000
+    }
+
+    get vadMode() {
+      return this.options.vadMode || VAD.Mode.VERY_AGGRESSIVE
+    }
+
+    get vadDebounceTime() {
+      return this.options.vadDebounceTime || 1000
+    }
+
+    get debounce() {
+      return this.options.debounce || 20
+    }
+
+    async processAudio(audioBuffer) {
+      if ( this._debouncing > 0 ) {
+        this._debouncing--
+        return true
+      }
+      const res = this._vad.processAudio(new Int16Array(audioBuffer.buffer), this.sampleRate)
+      if ( res === VAD.Event.VOICE ) {
+        this._debouncing = this.debounce
+        return true
+      }
+      return false
+    }
+
+    destroy(err) {
+      this._vad = null
+    }
   }
 
-  destroy(err) {
-    this._vad = null
-  }
+  return { VoiceActivityFilter };
 }
-
-VoiceActivityFilter.Mode = VAD.Mode
-
-module.exports = VoiceActivityFilter

@@ -1,7 +1,8 @@
-const DTW   = require('./dtw/dtw')
-const Utils = require('./utils')
+import DTW from "./dtw/dtw";
+import Utils from "./utils";
 
-class FeatureComparator {
+
+export default class FeatureComparator {
   constructor(options) {
     this.options = options || {}
     this._dtw = new DTW({distanceFunction: FeatureComparator.calculateDistance})
@@ -33,5 +34,3 @@ class FeatureComparator {
 
   }
 }
-
-module.exports = FeatureComparator

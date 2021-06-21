@@ -1,7 +1,8 @@
-const Matrix            = require('./matrix')
-const EuclidianDistance = require('./distance')
+import Matrix from "./matrix";
+import EuclidianDistance from "./distance";
 
-class DTW {
+
+export default class DTW {
   constructor(options) {
     options || (options = {})
     this._state            = {distanceCostMatrix: null}
@@ -121,5 +122,3 @@ class DTW {
     return path.reverse()
   }
 }
-
-module.exports = DTW

@@ -1,7 +1,8 @@
-const DTW        = require('./dtw/dtw')
-const Comparator = require('./comparator')
+import DTW from "./dtw/dtw";
+import Comparator from "./comparator";
 
-class WakewordKeyword {
+
+export default class WakewordKeyword {
   constructor(keyword, options) {
     this.keyword      = keyword
     this.options      = options || {}
@@ -77,5 +78,3 @@ class WakewordKeyword {
     this._averagedTemplate = origin
   }
 }
-
-module.exports = WakewordKeyword

@@ -6,3 +6,9 @@ test.js
 try.js
 *.wav
 *.raw
+example
+vad
+src
+index.js
+webpack.config.js
+.gitmodules

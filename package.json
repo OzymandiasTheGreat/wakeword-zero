@@ -1,22 +1,19 @@
 {
-  "name": "@mathquis/node-personal-wakeword",
-  "version": "1.1.1",
-  "description": "Personal wake word detector",
-  "main": "index.js",
+  "name": "wakeword-zero",
+  "version": "1.0.0",
+  "description": "Personal wake word detector ported to Web/WASM and bundled with Webpack",
+  "main": "dist/main.js",
   "typings": "index.d.ts",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "dependencies": {
-    "@mathquis/node-gist": "^1.0.3",
-    "block-stream2": "^2.0.0",
-    "debug": "^4.3.1",
-    "node-vad": "^1.1.4"
-  },
   "devDependencies": {
-    "chalk": "^4.0.0",
-    "glob": "^7.1.6",
-    "wavefile": "^11.0.0"
+    "@ozymandiasthegreat/vad": "^1.0.1",
+    "block-stream2": "^2.0.0",
+    "buffer": "^6.0.3",
+    "node-mfcc": "^0.0.2",
+    "pcm-util": "^3.0.0",
+    "process": "^0.11.10",
+    "stream-browserify": "^3.0.0",
+    "webpack": "^5.39.1",
+    "webpack-cli": "^4.7.2"
   },
   "keywords": [
     "wakeword",
@@ -24,17 +21,16 @@
     "dtw",
     "hotword",
     "detector",
-    "node",
-    "alexa"
+    "web"
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/mathquis/node-personal-wakeword.git"
+    "url": "git@github.com:OzymandiasTheGreat/wakeword-zero.git"
   },
-  "author": "Mathieu \"Fastjack\" Quisefit",
-  "license": "ISC",
+  "author": "Tomas Ravinskas",
+  "license": "MIT",
   "bugs": {
-    "url": "https://github.com/mathquis/node-personal-wakeword/issues"
+    "url": "https://github.com/OzymandiasTheGreat/wakeword-zero/issues"
   },
-  "homepage": "https://github.com/mathquis/node-personal-wakeword#readme"
+  "homepage": "https://github.com/OzymandiasTheGreat/wakeword-zero#readme"
 }

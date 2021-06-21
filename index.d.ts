@@ -52,6 +52,8 @@ declare class Detector extends Transform {
 	clearKeywords(keyword: string): void;
 	enableKeyword(keyword: string): void;
 	disableKeyword(keyword: string): void;
+
+	write(chunk: Uint8Array, encoding: void, cb: (...args: any[]) => void, resample: number): boolean;
 }
 
 export = Detector;

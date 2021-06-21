@@ -1,0 +1,3 @@
+[submodule "vad"]
+	path = vad
+	url = git@github.com:OzymandiasTheGreat/webrtcvad_wasm.git

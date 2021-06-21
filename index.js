@@ -1,3 +1,1 @@
-const Wakewordetector = require('./src/detector')
-
-module.exports = Wakewordetector
+export { default as DetectorBuilder } from "./src/detector";
