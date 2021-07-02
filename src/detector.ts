@@ -6,6 +6,7 @@ import { createExtractor, FeatureExtractor } from "./extractor.js";
 import { FeatureComparator } from "./comparator.js";
 import { WakewordKeyword, KeywordOptions } from "./keyword.js";
 import VoiceActivityFilterBuilder, { VoiceActivityFilter } from "./vad.js";
+import { convertAudio } from "./utils.js";
 import type { DetectorOptions } from "./index.js";
 
 
@@ -260,11 +261,11 @@ export class WakewordDetector extends Transform {
 				channels: this.channels,
 				float: false,
 				sampleRate: this.sampleRate,
-				signed: false,
+				signed: true,
 			});
 			audioBuffer = new Uint8Array(pcm.convert(audioBuffer.buffer, formatFrom, formatTo));
 		}
-		this.write(audioBuffer);
+		this.write(new Uint8Array(audioBuffer.buffer));
 	}
 
 	async extractFeatures(buffer: Buffer | ArrayBuffer): Promise<number[][]> {
@@ -272,7 +273,9 @@ export class WakewordDetector extends Transform {
 			buffer = new Uint8Array(buffer);
 		}
 
-		const reader = Readable.from(<Buffer> buffer);
+		const reader = new Readable({ read: () => {} });
+		reader.push(buffer);
+		reader.push(null);
 
 		return new Promise(async (resolve, reject) => {
 			const frames: number[][] = [];
@@ -362,6 +365,10 @@ export class WakewordDetector extends Transform {
 			throw new Error(`Unknown keyword "${keyword}"`);
 		}
 		kw.enabled = false;
+	}
+
+	convertAudio(buffer: ArrayBufferView, formatFrom: Partial<pcm.PCMFormat>, formatTo: Partial<pcm.PCMFormat>): ArrayBuffer {
+		return convertAudio(buffer, formatFrom, formatTo);
 	}
 }
 

@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "A sample app using wakeword detection from Node",
   "main": "index.js",
+  "type": "module",
   "author": "Tomas Ravinskas <tomas.rav@gmail.com>",
   "license": "MIT",
   "private": true,

@@ -39,7 +39,7 @@ detector.on("data", (event) => console.log(event));
 detector.on("error", (err) => console.error(err));
 
 
-stream.on("data", (data) => {
+stream.on("data", async (data) => {
 	if (!FINISHED) {
 		const i = SAMPLES.length - 1;
 		if (PRINTING === i && i + 2 <= 3) {
@@ -62,7 +62,7 @@ stream.on("data", (data) => {
 			STARTED    = false;
 			if (SAMPLES.length === 3) {
 				FINISHED = true;
-				detector.addKeyword(keyword, SAMPLES);
+				await detector.addKeyword(keyword, SAMPLES);
 				console.log("DONE!");
 			}
 		}

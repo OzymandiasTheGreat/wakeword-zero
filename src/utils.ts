@@ -1,3 +1,13 @@
+import * as pcm from "pcm-util";
+
+
+export function convertAudio(buffer: ArrayBufferView, formatFrom: Partial<pcm.PCMFormat>, formatTo: Partial<pcm.PCMFormat>): ArrayBuffer {
+	const fFrom = pcm.normalize(formatFrom);
+	const fTo   = pcm.normalize(formatTo);
+	return pcm.convert(buffer.buffer, fFrom, fTo);
+}
+
+
 export function convertInt16ToFloat32(n: number): number {
 	const v = n < 0 ? n / 32768 : n / 32767;
 	return Math.max(-1, Math.min(1, v));

@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Document</title>
+	<script src="../dist/index.js" ></script>
+</head>
+<body>
+<button id="record" >record</button>
+<button id="start" >start</button>
+<button id="stop" >stop</button>
+<div>
+	<div id="samples" style="float: right;"></div>
+	<div>
+		<pre id="output" ></pre>
+	</div>
+</div>
+<script type="module" >
+const recBtn  = document.getElementById("record");
+const smplDiv = document.getElementById("samples");
+const strtBtn = document.getElementById("start");
+const output  = document.getElementById("output");
+const stpBtn  = document.getElementById("stop");
+
+
+import VADBuilder, { VADMode, VADEvent } from "./assets/embedded.js";
+
+
+const VAD     = await VADBuilder();
+const vad     = new VAD(VADMode.VERY_AGGRESSIVE, 16000);
+const wake    = await WakeWordZero.default({ vadMode: VADMode.VERY_AGGRESSIVE });
+const SAMPLES = [];
+let SAMPLENO  = 0
+
+const worklet = `
+class AudioProc extends AudioWorkletProcessor {
+	constructor() {
+		super();
+	}
+	process(inputs, outputs, params) {
+		this.port.postMessage(inputs[0][0]);
+		return true;
+	}
+}
+registerProcessor("audio-proc", AudioProc);`;
+
+
+const stream  = await navigator.mediaDevices.getUserMedia({ audio: true, video: false })
+const context = new AudioContext({ sampleRate: 16000 });
+const source  = context.createMediaStreamSource(stream);
+const blob    = new Blob([worklet], { type: "text/javascript" });
+const uri     = URL.createObjectURL(blob);
+
+await context.audioWorklet.addModule(uri);
+const node    = new AudioWorkletNode(context, "audio-proc");
+source.connect(node).connect(context.destination);
+
+
+async function record() {
+	let started = false;
+	let frames  = [];
+	SAMPLES.push(await new Promise((resolve) => {
+		node.port.onmessage = (event) => {
+			const frame = new Int16Array(wake.convertAudio(
+				event.data,
+				{ sampleRate: 16000, float: true, channels: 1, signed: true, interleaved: false },
+				{ sampleRate: 16000, float: false, channels: 1, signed: true, bitDepth: 16 },
+			));
+			const result = vad.processBuffer(frame);
+			if (result === VADEvent.VOICE) {
+				started = true;
+				frames.push(frame);
+			} else if (started && result !== VADEvent.VOICE) {
+				const length = frames.length * frames[0].length;
+				const sample = new Int16Array(length);
+				let   offset = 0
+				node.port.onmessage = null;
+				frames.forEach((frame) => {
+					sample.set(frame, offset);
+					offset += frame.length;
+				});
+				const blob = new Blob([sample], { type: "application/octet-stream" });
+				const uri  = URL.createObjectURL(blob);
+				const el   = document.createElement("div");
+				SAMPLENO++;
+				el.innerHTML = `<a href="${uri.toString()}">SAMPLE ${SAMPLENO}</a>`;
+				smplDiv.append(el);
+				resolve(new Uint8Array(sample.buffer));
+			}
+		}
+	}));
+}
+
+
+function start() {
+	wake.addKeyword("sample", SAMPLES);
+	wake.on("data", (event) => {
+		const log = {...event};
+		delete log.audioData;
+		output.append(`${JSON.stringify(log, null, 2)}\n`);
+	});
+	node.port.onmessage = (event) => {
+		wake.process(event.data, { sampleRate: 16000, float: true, channels: 1, signed: true, interleaved: false });
+	}
+}
+
+
+function stop() {
+	wake.removeAllListeners();
+	node.port.onmessage = null;
+}
+
+
+recBtn.addEventListener("click", () => record());
+strtBtn.addEventListener("click", () => start());
+stpBtn.addEventListener("click", () => stop());
+</script>
+</body>
+</html>
