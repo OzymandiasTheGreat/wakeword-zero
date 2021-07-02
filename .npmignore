@@ -1,14 +1,8 @@
 node_modules
-wavs
 .gitignore
-record.js
-test.js
-try.js
-*.wav
-*.raw
 docs
-vad
 src
-index.js
 webpack.config.js
-.gitmodules
+examples
+third-party
+tsconfig.json
