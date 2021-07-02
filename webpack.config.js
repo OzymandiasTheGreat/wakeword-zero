@@ -2,9 +2,38 @@ const webpack = require("webpack");
 const path = require("path");
 
 
+const ns = {
+	output: {
+		library: {
+			name: "WakeWord",
+			type: "umd",
+		},
+		filename: "main.ns.js",
+		path: path.resolve(__dirname, "dist"),
+		globalObject: "this",
+		publicPath: "file:///",
+		chunkLoading: false,
+	},
+}
+
+
+const web = {
+	output: {
+		library: {
+			name: "WakeWord",
+			type: "umd",
+		},
+		filename: "main.js",
+		path: path.resolve(__dirname, "dist"),
+		publicPath: "auto",
+	},
+}
+
+
 const main = {
 	entry: "./index.js",
 	mode: "development",
+	target: "es2015",
 	module: {
 		rules: [
 			{
@@ -13,45 +42,15 @@ const main = {
 			},
 		],
 	},
-};
-
-
-const node = {
-	target: "node",
-	output: {
-		library: {
-			name: "WakeWord",
-			type: "commonjs",
-		},
-		filename: "main.node.js",
-		path: path.resolve(__dirname, "dist"),
-	},
 	externals: [
-		"block-stream2",
+		"@nativescript/core",
 	],
-	resolve: {
-		fallback: {
-			"node-mfcc": path.resolve("./node_modules/node-mfcc/src/mfcc.js"),
-		},
-	},
-}
-
-
-const browser = {
-	target: "web",
-	output: {
-		library: {
-			name: "WakeWord",
-			type: "umd",
-		},
-		filename: "main.js",
-		path: path.resolve(__dirname, "dist"),
-	},
 	resolve: {
 		alias: {
 			fs: false,
 			os: false,
 			path: false,
+			util: false,
 		},
 		fallback: {
 			stream: "stream-browserify",
@@ -60,11 +59,11 @@ const browser = {
 	},
 	plugins: [
 		new webpack.ProvidePlugin({
-			process: "process/browser.js",
-			Buffer: ["buffer", "Buffer"],
+			process: path.resolve("./node_modules/process/browser.js"),
+			Buffer: [path.resolve("./node_modules/buffer"), "Buffer"],
 		}),
 	],
 }
 
 
-module.exports = [{...main, ...browser}, {...main, ...node}];
+module.exports = [{...main, ...ns}, {...main, ...web}];

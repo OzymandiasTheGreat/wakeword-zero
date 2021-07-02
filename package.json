@@ -1,17 +1,25 @@
 {
   "name": "@ozymandiasthegreat/wakeword-zero",
-  "version": "1.0.1",
-  "description": "Personal wake word detector ported to Web/WASM and bundled with Webpack",
-  "main": "dist/main.js",
-  "typings": "index.d.ts",
-  "devDependencies": {
-    "@ozymandiasthegreat/vad": "^1.0.1",
+  "version": "2.0.0",
+  "description": "Personal wake word detector ported to TypeScript/WASM, running in browsers, Node, and NativeScript",
+  "main": "./lib/index.js",
+  "browser": "./dist/index.js",
+  "typings": "./lib/index.d.ts",
+  "type": "module",
+  "scripts": {
+    "tsc": "npx tsc -p tsconfig.json"
+  },
+  "dependencies": {
+    "@ozymandiasthegreat/mfcc": "file:../mfcc",
+    "@ozymandiasthegreat/vad": "file:../libfvad-wasm",
     "block-stream2": "^2.0.0",
+    "pcm-util": "^3.0.0"
+  },
+  "devDependencies": {
     "buffer": "^6.0.3",
-    "node-mfcc": "^0.0.2",
-    "pcm-util": "^3.0.0",
     "process": "^0.11.10",
     "stream-browserify": "^3.0.0",
+    "typescript": "^4.3.4",
     "webpack": "^5.39.1",
     "webpack-cli": "^4.7.2"
   },
@@ -21,7 +29,9 @@
     "dtw",
     "hotword",
     "detector",
-    "web"
+    "web",
+    "node",
+    "nativescript"
   ],
   "repository": {
     "type": "git",
