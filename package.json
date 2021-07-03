@@ -1,6 +1,6 @@
 {
   "name": "@ozymandiasthegreat/wakeword-zero",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "Personal wake word detector ported to TypeScript/WASM, running in browsers, Node, and NativeScript",
   "main": "lib/index.js",
   "browser": "dist/index.js",
