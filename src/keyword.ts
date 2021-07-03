@@ -3,19 +3,19 @@ import { FeatureComparator } from "./comparator.js";
 
 
 export interface KeywordOptions {
-	disableAveraging: boolean;
-	threshold: number;
+	disableAveraging?: boolean;
+	threshold?: number;
 }
 
 
 export class WakewordKeyword {
-	private options: KeywordOptions;
+	private options?: KeywordOptions;
 	private averagedTemplate: number[][] = [];
 	private _templates: number[][][] = [];
 	keyword: string;
 	enabled: boolean;
 
-	constructor(keyword: string, options: KeywordOptions) {
+	constructor(keyword: string, options?: KeywordOptions) {
 		this.keyword = keyword;
 		this.options = options;
 		this.enabled = true;

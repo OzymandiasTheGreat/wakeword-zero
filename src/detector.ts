@@ -317,7 +317,7 @@ export class WakewordDetector extends Transform {
 		return null;
 	}
 
-	async addKeyword(keyword: string, templates: (Buffer | ArrayBuffer)[], options: KeywordOptions): Promise<void> {
+	async addKeyword(keyword: string, templates: (Buffer | ArrayBuffer)[], options?: KeywordOptions): Promise<void> {
 		if (this.destroyed) {
 			throw new Error("Unable to add keyword");
 		}
