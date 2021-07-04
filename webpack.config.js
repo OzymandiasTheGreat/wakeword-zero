@@ -8,7 +8,7 @@ const __dirname = new URL("./", import.meta.url).pathname;
 
 const config = {
 	entry: "./lib/index.js",
-	mode: "development",
+	mode: "production",
 	target: "web",
 	output: {
 		library: {

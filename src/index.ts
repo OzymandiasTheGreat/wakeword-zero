@@ -1,5 +1,6 @@
-import type { VAD, VADMode } from "@ozymandiasthegreat/vad";
-import type { WakewordDetector } from "./detector.js";
+import { VAD } from "@ozymandiasthegreat/vad";
+import { VADMode } from "@ozymandiasthegreat/vad";
+import type { WakewordDetector, KeywordResult } from "./detector.js";
 import WakewordDetectorBuilder from "./detector.js";
 
 
@@ -19,4 +20,4 @@ export type DetectorOptions = {
 }
 
 
-export { WakewordDetectorBuilder as default, WakewordDetector, VADMode };
+export { WakewordDetectorBuilder as default, WakewordDetector, KeywordResult, VADMode };

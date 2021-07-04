@@ -10,12 +10,14 @@ import { convertAudio } from "./utils.js";
 import type { DetectorOptions } from "./index.js";
 
 
-interface KeywordResult {
+export interface KeywordResult {
 	keyword: string | null;
 	score: number;
 	threshold: number;
 	frames?: number;
 	duration?: number;
+	timestamp?: number;
+	audioData?: Uint8Array;
 }
 
 
