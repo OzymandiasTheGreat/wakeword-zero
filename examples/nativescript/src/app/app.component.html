@@ -1,0 +1,10 @@
+<GridLayout>
+	<StackLayout verticalAlignment="center" >
+		<Button text="Start Listening" (tap)="start()" [backgroundColor]="detected ? '#7cb342' : '#212121'" ></Button>
+		<Button text="Stop Listening" (tap)="stop()" ></Button>
+		<Button text="Add Template" (tap)="add()" [backgroundColor]="isRecording ? '#d50000' : '#212121'" ></Button>
+		<Button text="Cancel Template" (tap)="cancel()" ></Button>
+		<Button text="Remove Wakeword" (tap)="remove()" ></Button>
+		<Button *ngFor="let sample of samples" [text]="sample" (tap)="play(sample)" ></Button>
+	</StackLayout>
+</GridLayout>
